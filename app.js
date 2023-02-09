@@ -5,6 +5,35 @@ const divButtons = document.querySelector("#divButtons")
 
 let lastRow = 1
 
+carica()
+
+function carica() {
+    let alunni = []
+    let stringa = localStorage.getItem("alunni")
+    if ( stringa ) {
+        alunni = JSON.parse(stringa)
+    }
+    alunni.forEach( function(alunno) {
+        creaRiga( {
+            nominativo:alunno.nominativo, 
+            classe: alunno.classe
+        })
+    })
+}
+
+function salva() {
+    let alunni = []
+    let righe = tbody.querySelectorAll('tr')
+    righe.forEach( function(riga) {
+        let alunno = {
+            nominativo: riga.children[0].innerHTML,
+            classe: riga.children[1].innerHTML
+        }
+        alunni.push(alunno)
+    } )
+    localStorage.setItem("alunni", JSON.stringify(alunni)) 
+}
+
 function clearInput() {
     alunno.value = ""
     classe.value = ""
@@ -38,11 +67,11 @@ function creaBottone( title, id, funzione, tipo) {
     return btn
 }
    
-function creaRiga() {
+function creaRiga(obj) {
     let riga = document.createElement('tr')
     riga.setAttributeNode( creaAttributo("id","riga"+lastRow) )
-    riga.appendChild( creaColonnaDato( alunno.value) )
-    riga.appendChild( creaColonnaDato( classe.value) )
+    riga.appendChild( creaColonnaDato( obj.nominativo ) )
+    riga.appendChild( creaColonnaDato( obj.classe ) )
     let td = creaColonnaDato( "" )
     td.appendChild( creaBottone("Elimina", lastRow, "elimina(" + lastRow + ")", 1 ) )
     td.appendChild( creaBottone("Modifica", lastRow, "modifica(" + lastRow + ")", 1 ) )
@@ -54,8 +83,11 @@ function creaRiga() {
 function aggiungi() {
     if ( alunno.value.trim().length < 4 ) return false
     if ( classe.value == 0 ) return false
-   
-    creaRiga()
+    let obj = {
+        nominativo: alunno.value,
+        classe: classe.value
+    }
+    creaRiga(obj)
    
     clearInput()
 }
